@@ -1,52 +1,38 @@
-%global debug_package %{nil}
-# header only lib
+# Mixing gcc and clang during testing (and since no binary
+# is being generated, performance gain from LTO doesn't exist
+# anyway)
+%global _disable_lto 1
 
 Name:           safeint
 Version:        3.0.28a
-Release:        1
+Release:        2
 Summary:        Class library for C++ that manages integer overflows
 License:        MIT
 URL:            https://github.com/dcleblanc/SafeInt
 Source0:        https://github.com/dcleblanc/SafeInt/archive/%{version}/SafeInt-%{version}.tar.gz
 
-BuildRequires:  cmake
+BuildArch:	noarch
 
-%global _description %{expand:
-An integer overflow library that was originally created in Microsoft
-Office in 2003, and later was made open source on CodePlex using the MS-PL
-license. After CodePlex was deprecated, the project was moved to github
-and the license was changed to the MIT license.}
+BuildSystem:	cmake
+BuildOption:	-DCMAKE_INSTALL_INCLUDEDIR=%{_includedir}/SafeInt
 
+%patchlist
+https://data.gpo.zugaina.org/guru/dev-cpp/safeint/files/safeint-3.0.28a-install-the-library.patch
+https://data.gpo.zugaina.org/guru/dev-cpp/safeint/files/safeint-3.0.28a-make-tests-optional.patch
+https://data.gpo.zugaina.org/guru/dev-cpp/safeint/files/safeint-3.0.28a-remove-broken-tests.patch
+safeint-3.0.28a-fix-tests.patch
 
 %description
-%{_description}
-
+Class library for C++ that manages integer overflows
 
 %package devel
 Summary: %{summary}
-Provides: %{name}-static = %{version}-%{release}
-
 
 %description devel
-%{_description}
-
-
-%prep
-%autosetup -p1 -n SafeInt-%{version}
-
-
-%build
-
-
-%install
-install -d %{buildroot}%{_includedir}/SafeInt
-install -D -p SafeInt.hpp -t %{buildroot}%{_includedir}/SafeInt/
-install -D -p safe_math.h -t %{buildroot}%{_includedir}/SafeInt/
-install -D -p safe_math_impl.h -t %{buildroot}%{_includedir}/SafeInt/
-
+Class library for C++ that manages integer overflows
 
 %files devel
-%license LICENSE
+%license %{_docdir}/SafeInt/LICENSE
 %doc README.md
 %dir %{_includedir}/SafeInt
 %{_includedir}/SafeInt/SafeInt.hpp

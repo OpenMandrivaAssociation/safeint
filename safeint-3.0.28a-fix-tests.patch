@@ -1,0 +1,45 @@
+diff -up safeint-3.0.28a/Test/ClangTest/CMakeLists.txt.omv~ safeint-3.0.28a/Test/ClangTest/CMakeLists.txt
+--- safeint-3.0.28a/Test/ClangTest/CMakeLists.txt.omv~	2025-10-05 23:12:01.490643357 +0200
++++ safeint-3.0.28a/Test/ClangTest/CMakeLists.txt	2025-10-05 23:13:06.337818138 +0200
+@@ -149,6 +149,8 @@ else()
+ 
+     target_compile_options(CompileTest_clang17_NoEH PUBLIC -Wall -Wextra -Werror -std=c++17 -fno-exceptions)
+ 
++    if(FALSE)
++    # C++98 is so old even our system headers don't work with it anymore. Just drop it.
+     add_executable(CompileTest_clang98
+         ../CompileTest.cpp
+         ../ConstExpr.cpp 
+@@ -157,6 +159,7 @@ else()
+     )
+ 
+     target_compile_options(CompileTest_clang98 PUBLIC -D SAFEINT_USE_CPLUSCPLUS_98 -Wall -Wextra -Werror -std=c++98 -fno-exceptions)
++    endif()
+ 
+     add_executable(safe_math_test_clang
+         ../c_safe_math/safe_math_test.c
+diff -up safeint-3.0.28a/Test/CompileTest.cpp.omv~ safeint-3.0.28a/Test/CompileTest.cpp
+--- safeint-3.0.28a/Test/CompileTest.cpp.omv~	2025-10-05 23:13:31.050110420 +0200
++++ safeint-3.0.28a/Test/CompileTest.cpp	2025-10-05 23:13:51.846373090 +0200
+@@ -257,8 +257,6 @@ void CompileType()
+ 
+ }
+ 
+-void MoveRegression()
+-{
+ 	#if CPLUSPLUS_STD == CPLUSPLUS_17
+ 	#include <variant>
+ 	#include <string>
+@@ -277,7 +275,10 @@ void MoveRegression()
+ 
+ 		std::variant<T...> value;
+ 	};
+-
++	#endif
++void MoveRegression()
++{
++	#if CPLUSPLUS_STD == CPLUSPLUS_17
+ 	Union<std::string, SafeInt<int64_t>> x;
+ 	Union<std::string, SafeInt<int64_t>> y;
+ 	x = std::move(y);
+diff -up safeint-3.0.28a/Test/GccTest/CMakeLists.txt.omv~ safeint-3.0.28a/Test/GccTest/CMakeLists.txt
